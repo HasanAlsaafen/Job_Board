@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Dark navy background with rounded corners -->
+  <rect width="32" height="32" rx="6" fill="#1e293b"/>
+  <!-- Briefcase body -->
+  <rect x="5" y="14" width="22" height="13" rx="2" fill="#f59e0b"/>
+  <!-- Briefcase handle top arc -->
+  <path d="M12 14v-2.5a1.5 1.5 0 0 1 1.5-1.5h5a1.5 1.5 0 0 1 1.5 1.5V14" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Center horizontal line -->
+  <line x1="5" y1="20.5" x2="27" y2="20.5" stroke="#1e293b" stroke-width="1.5"/>
+  <!-- Latch clasp -->
+  <rect x="14" y="18.5" width="4" height="4" rx="1" fill="#1e293b"/>
+</svg>
