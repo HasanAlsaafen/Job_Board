@@ -13,15 +13,18 @@ class JobDetail extends Component
 
     public function mount(JobListing $job): void
     {
-        $this->job = $job->load('user');
+        $this->job = $job->load(['user', 'tags']);
+        $this->job->count += 1;
+        $this->job->save();
     }
 
     public function render()
     {
+
         $alreadyApplied = Auth::check()
             ? Applications::where('user_id', Auth::id())
-                ->where('job_listing_id', $this->job->id)
-                ->exists()
+            ->where('job_listing_id', $this->job->id)
+            ->exists()
             : false;
 
         return view('livewire.job-detail', compact('alreadyApplied'));

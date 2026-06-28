@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\JobListing;
+use App\Models\Tag;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -21,6 +22,7 @@ class MyJobs extends Component
 
     public ?JobListing $jobListing = null;
     public bool $showEditModal = false;
+    public array $selectedTagIds = [];
 
     public function deleteJob(JobListing $job)
     {
@@ -39,12 +41,18 @@ class MyJobs extends Component
         $this->requirements = $jobListing->requirements;
         $this->salary_range = $jobListing->salary_range;
         $this->type = $jobListing->type;
+        $this->selectedTagIds = $jobListing->tags->pluck('id')->map(fn($id) => (string) $id)->toArray();
         $this->showEditModal = true;
+    }
+
+    public function removeTag(int $tagId): void
+    {
+        $this->selectedTagIds = array_values(array_filter($this->selectedTagIds, fn($id) => (int) $id !== $tagId));
     }
 
     public function cancelEdit()
     {
-        $this->reset(['title', 'location', 'description', 'requirements', 'type', 'company_name', 'salary_range', 'jobListing', 'showEditModal']);
+        $this->reset(['title', 'location', 'description', 'requirements', 'type', 'company_name', 'salary_range', 'jobListing', 'showEditModal', 'selectedTagIds']);
     }
 
     public function updateJob()
@@ -66,6 +74,7 @@ class MyJobs extends Component
             'salary_range' => $this->salary_range,
             'type' => $this->type,
         ]);
+        $this->jobListing->tags()->sync($this->selectedTagIds);
 
         $this->successMessage = 'Job updated successfully!';
         $this->reset(['title', 'location', 'description', 'requirements', 'type', 'company_name', 'salary_range', 'jobListing', 'showEditModal']);
@@ -74,9 +83,10 @@ class MyJobs extends Component
     {
         $myJobs = JobListing::where('user_id', auth()->id())
             ->withCount('applications')
+            ->with('tags')
             ->latest()
             ->get();
 
-        return view('livewire.my-jobs', ['myJobs' => $myJobs]);
+        return view('livewire.my-jobs', ['myJobs' => $myJobs, 'tags' => Tag::all()]);
     }
 }

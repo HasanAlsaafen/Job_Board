@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\JobListing;
+use App\Models\Tag;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -15,10 +16,16 @@ class JobsFeed extends Component
 
     public string $search = '';
     public string $selectedType = '';
+    public string $selectedTag = '';
 
     public string $view = 'list';
 
     public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSelectedTag(): void
     {
         $this->resetPage();
     }
@@ -51,17 +58,23 @@ class JobsFeed extends Component
             ->when($this->selectedType, function ($query) {
                 $query->where('type', $this->selectedType);
             })
+            ->when($this->selectedTag, function ($query) {
+                $query->whereHas('tags', function ($query) {
+                    $query->where('tag_id', $this->selectedTag);
+                });
+            })
             ->withExists(['savedByUsers' => function ($query) {
                 $query->where('user_id', auth()->id());
             }])
+            ->with('tags')
             ->latest();
-
 
 
         return view('livewire.jobs-feed', [
             'jobs' => $this->view === 'map'
                 ? $query->get()
                 : $query->paginate(10),
+            'tags' => Tag::orderBy('name')->get(),
         ]);
     }
 }

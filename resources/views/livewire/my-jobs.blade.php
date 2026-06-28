@@ -163,6 +163,43 @@
                     @error('type') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
+                <div class="space-y-2">
+                    <label class="block font-medium text-gray-700 mb-1">{{ __('messages.job_form.tags') }}</label>
+                    <div class="flex flex-wrap gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg min-h-[44px]">
+                        @php $availableTags = $tags->filter(fn($t) => !in_array((string)$t->id, $selectedTagIds)); @endphp
+                        @forelse ($availableTags as $tag)
+                            <label class="cursor-pointer select-none">
+                                <input type="checkbox" wire:model.live="selectedTagIds" value="{{ $tag->id }}" class="hidden">
+                                <span style="color: {{ $tag->color }}; background-color: {{ $tag->bg }}"
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold opacity-65 hover:opacity-100 hover:shadow-sm transition-all duration-150">
+                                    {{ $tag->name }}
+                                </span>
+                            </label>
+                        @empty
+                            <span class="text-xs text-gray-400 self-center italic">All tags selected</span>
+                        @endforelse
+                    </div>
+                    @if (count($selectedTagIds) > 0)
+                        <div class="p-3 border border-blue-100 bg-blue-50 rounded-lg">
+                            <p class="text-xs font-medium text-blue-400 mb-2">{{ count($selectedTagIds) }} {{ count($selectedTagIds) === 1 ? 'tag' : 'tags' }} chosen</p>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach ($tags->whereIn('id', $selectedTagIds) as $tag)
+                                    <span style="color: {{ $tag->color }}; background-color: {{ $tag->bg }}"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                                        {{ $tag->name }}
+                                        <button type="button" wire:click="removeTag({{ $tag->id }})"
+                                            class="opacity-60 hover:opacity-100 transition-opacity leading-none">
+                                            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">{{ __('messages.job_form.salary_range') }}</label>
                     <input type="text" wire:model="salary_range" placeholder="{{ __('messages.job_form.salary_placeholder') }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-gray-900">

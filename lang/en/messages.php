@@ -106,7 +106,8 @@ return [
         'requirements'             => 'Requirements',
         'requirements_placeholder' => 'Requirements...',
         'location'                 => 'Location',
-        'location_placeholder'     => 'Paris, onsite'
+        'location_placeholder'     => 'Paris, onsite',
+        'tags'                     => 'Tags',
 
     ],
     'employer_dashboard' => [
@@ -134,7 +135,14 @@ return [
     'jobs_feed' => [
         'search_placeholder' => 'Search jobs or companies...',
         'all_types'          => 'All Job Types',
+        'all_tags'           => 'All tags',
         'no_results'         => 'No jobs match your search criteria.',
+        'list'               => 'List',
+        'map'                => 'Map',
+        'save'               => 'Save',
+        'saved'              => 'Saved',
+        'view_details'       => 'View Details',
+        'views'              => 'Views',
     ],
     'apply_modal' => [
         'title'                    => 'Apply for this position',

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;

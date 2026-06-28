@@ -21,6 +21,8 @@ class StoreJobListingRequest extends FormRequest
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'type' => 'required|in:Full-time,Part-time,Contract',
+            'selectedTagIds' => 'nullable|array',
+            'selectedTagIds.*' => 'exists:tags,id',
         ];
     }
 }

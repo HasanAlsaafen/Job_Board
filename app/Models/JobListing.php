@@ -49,4 +49,8 @@ class JobListing extends Model
         return $query->where('title', 'LIKE', '%' . $search . '%')
             ->orWhere('company_name', 'LIKE', '%' . $search . '%');
     }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
 }

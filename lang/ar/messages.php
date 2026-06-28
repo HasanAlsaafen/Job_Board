@@ -106,7 +106,8 @@ return [
         'requirements'             => 'المتطلبات',
         'requirements_placeholder' => 'المتطلبات...',
         'location'                 => 'الموقع',
-        'location_placeholder'     => 'رام الله , في المكتب'
+        'location_placeholder'     => 'رام الله , في المكتب',
+        'tags'                     => 'الوسوم',
     ],
     'employer_dashboard' => [
         'title'          => 'نشر وظيفة',
@@ -133,7 +134,14 @@ return [
     'jobs_feed' => [
         'search_placeholder' => 'ابحث عن وظائف أو شركات...',
         'all_types'          => 'جميع أنواع الوظائف',
+        'all_tags'           => 'كل الوسوم',
         'no_results'         => 'لا توجد وظائف تطابق معايير البحث.',
+        'list'               => 'قائمة',
+        'map'                => 'خريطة',
+        'save'               => 'حفظ',
+        'saved'              => 'محفوظة',
+        'view_details'       => 'عرض التفاصيل',
+        'views'              => 'مشاهدة',
     ],
     'apply_modal' => [
         'title'                    => 'تقدّم لهذه الوظيفة',

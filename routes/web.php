@@ -12,6 +12,7 @@ use App\Livewire\MyApplications;
 use App\Livewire\Profile;
 use App\Livewire\EmployerProfile;
 use App\Livewire\SavedJobs;
+use App\Livewire\ManageTags;
 
 Route::view('/', 'welcome')->name('home');
 
@@ -24,11 +25,12 @@ Route::get('/jobs/{job}', \App\Livewire\JobDetail::class)->name('jobs.show');
 Route::get('/dashboard/jobs/{job}/applicants', \App\Livewire\JobApplicants::class)
     ->name('employer.job.applicants');
 
-Route::middleware(['auth', 'employer'])->group(function () {
+Route::middleware(['auth', 'employer', 'verified'])->group(function () {
     Route::get('/dashboard', EmployerDashboard::class)->name('dashboard');
     Route::get('/dashboard/jobs', MyJobs::class)->name('employer.jobs');
     Route::get('/dashboard/applicants', EmployerApplicants::class)->name('employer.applicants');
     Route::get('/dashboard/profile', EmployerProfile::class)->name('employer.profile');
+    Route::get('/dashboard/tags', ManageTags::class)->name('employer.tags');
 });
 Route::middleware(['auth', 'seeker'])->group(function () {
     Route::get('/openings', JobsFeed::class)->name('openings');
