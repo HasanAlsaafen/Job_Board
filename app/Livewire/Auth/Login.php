@@ -19,6 +19,7 @@ class Login extends Component
     {
         $this->validate();
 
+
         if (auth()->attempt(['email' => $this->email, 'password' => $this->password])) {
 
             if (auth()->user()->role === 'employer') {
@@ -30,7 +31,6 @@ class Login extends Component
             }
             return redirect()->to('/');
         }
-
         $this->errorMessage = 'Invalid credentials. Please try again.';
     }
 

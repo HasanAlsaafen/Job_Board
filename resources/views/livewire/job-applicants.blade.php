@@ -70,7 +70,7 @@
                         <div class="flex items-start gap-3 flex-1 min-w-0">
                             <div
                                 class="shrink-0 w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center uppercase">
-                                @if ($application->user->profile->img_url)
+                                @if ($application->user->profile && $application->user->profile->img_url)
                                     <img src="{{ Storage::url($application->user->profile->img_url) }}"
                                         alt="{{ $application->user->name }}"
                                         class="w-full h-full object-cover rounded-full">

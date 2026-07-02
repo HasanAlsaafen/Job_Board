@@ -37,7 +37,7 @@ class AdminUsers extends Component implements HasForms, HasTable
 
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
-                    ->color(fn ($state) => match ($state) {
+                    ->color(fn($state) => match ($state) {
                         'admin'    => 'danger',
                         'employer' => 'primary',
                         default    => 'info',

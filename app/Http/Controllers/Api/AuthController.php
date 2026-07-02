@@ -10,7 +10,32 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Login and get API token",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password","device_name"},
+     *             @OA\Property(property="email", type="string", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="password"),
+     *             @OA\Property(property="device_name", type="string", example="mobile")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string"),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Invalid credentials")
+     * )
+     */
+     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -33,7 +58,15 @@ class AuthController extends Controller
             'user' => $user,
         ]);
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Logout and revoke token",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Logged out successfully")
+     * )
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

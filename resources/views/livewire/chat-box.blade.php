@@ -23,9 +23,7 @@
         </a>
 
         @php
-            $initials = collect(explode(' ', $otherParticipant->name))
-                ->take(1)
-                ->join('');
+            $initials = $otherParticipant->initials();
             $avatarColors = [
                 'bg-indigo-500',
                 'bg-violet-500',
@@ -123,9 +121,7 @@
 
                     @unless ($isOwn)
                         @php
-                            $senderInitials = collect(explode(' ', $message->user->name))
-                                ->take(1)
-                                ->join('');
+                            $senderInitials = $message->user->initials();
                             $senderColor = $avatarColors[crc32($message->user->name) % count($avatarColors)];
                         @endphp
 

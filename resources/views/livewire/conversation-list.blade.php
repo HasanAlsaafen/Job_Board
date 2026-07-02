@@ -44,9 +44,7 @@
         @forelse ($conversations as $conversation)
             @php
                 $other = $conversation->otherParticipant();
-                $initials = collect(explode(' ', $other->name))
-                    ->take(1)
-                    ->join('');
+                $initials = $other->initials();
                 $avatarColor = $avatarColors[crc32($other->name) % count($avatarColors)];
                 $latest = $conversation->latestMessage;
                 $isUnread = $latest && $latest->user_id !== auth()->id() && is_null($latest->read_at);
