@@ -22,7 +22,16 @@ class JobApplicants extends Component
 
         $this->job = $job;
     }
+    public function startConversation(int $seekerId): void
+    {
+        $conversation = \App\Models\Conversation::firstOrCreate([
+            'employer_id' => auth()->id(),
+            'seeker_id' => $seekerId,
+            'job_listing_id' => $this->job->id,
+        ]);
 
+        $this->redirect(route('conversations.show', $conversation));
+    }
     public function render()
     {
         return view('livewire.job-applicants', [

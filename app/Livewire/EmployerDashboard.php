@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use App\Models\Applications;
 use App\Models\JobListing;
 use App\Http\Requests\StoreJobListingRequest;
 use App\Models\Tag;
@@ -25,6 +26,7 @@ class EmployerDashboard extends Component
     public string $location_name = '';
 
     public array $selectedTagIds = [];
+    public ?string $expires_at = null;
 
 
 
@@ -49,25 +51,35 @@ class EmployerDashboard extends Component
             'type' => $this->type,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
-            'location' => $this->location
+            'location' => $this->location,
+            'expires_at' => $this->expires_at,
 
         ]);
         $job->tags()->sync($this->selectedTagIds);
 
-        $this->reset(['title', 'description', 'location_name', 'latitude', 'longitude', 'type', 'selectedTagIds']);
+        $this->reset(['title', 'description', 'location_name', 'latitude', 'longitude', 'type', 'selectedTagIds', 'expires_at']);
         $this->successMessage = 'Job listing created successfully!';
     }
 
     public function render()
     {
-        $myJobs = JobListing::where('user_id', auth()->id())
+        $userId = auth()->id();
+
+        $myJobs = JobListing::where('user_id', $userId)
             ->with(['applications.user'])
             ->latest()
             ->get();
 
+        $myApplicants = Applications::whereHas('jobListing', fn($q) => $q->where('user_id', $userId));
+
         return view('livewire.employer-dashboard', [
             'myJobs' => $myJobs,
             'tags' => Tag::all(),
+            'activeJobsCount' => JobListing::where('user_id', $userId)->notExpired()->count(),
+            'totalJobsCount' => $myJobs->count(),
+            'totalApplicantsCount' => (clone $myApplicants)->count(),
+            'pendingApplicantsCount' => (clone $myApplicants)->where('status', 'Pending')->count(),
+            'recentApplicants' => (clone $myApplicants)->with(['user', 'jobListing'])->latest()->take(5)->get(),
         ]);
     }
 }

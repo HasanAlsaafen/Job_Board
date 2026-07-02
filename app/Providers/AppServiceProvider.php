@@ -9,6 +9,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Carbon\Carbon;
 
+use Illuminate\Notifications\DatabaseNotification;
+use App\Observers\DatabaseNotificationObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->configureDefaults();
         Carbon::setLocale(app()->getLocale());
+        DatabaseNotification::observe(DatabaseNotificationObserver::class);
     }
 
     /**

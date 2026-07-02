@@ -23,6 +23,7 @@ class StoreJobListingRequest extends FormRequest
             'type' => 'required|in:Full-time,Part-time,Contract',
             'selectedTagIds' => 'nullable|array',
             'selectedTagIds.*' => 'exists:tags,id',
+            'expires_at' => 'nullable|date|after:today',
         ];
     }
 }

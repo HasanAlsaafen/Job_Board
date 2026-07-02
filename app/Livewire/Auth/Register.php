@@ -39,7 +39,7 @@ class Register extends Component
         if ($user->role == 'employer') {
             return redirect()->to('dashboard');
         } else {
-            return redirect()->to('/');
+            return redirect()->route('seeker.dashboard');
         }
     }
     public function render()

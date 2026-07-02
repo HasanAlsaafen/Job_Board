@@ -20,6 +20,7 @@ class SavedJobs extends Component
     public function render()
     {
         $jobs = auth()->user()->savedJobs()->latest('job_user.created_at')->get();
+    
 
         return view('livewire.saved-jobs', compact('jobs'));
     }

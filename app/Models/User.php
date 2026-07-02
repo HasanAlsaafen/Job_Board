@@ -16,6 +16,9 @@ use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use NotificationChannels\WebPush\HasPushSubscriptions;
+
 
 /**
  * @property int $id
@@ -35,7 +38,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable, HasApiTokens, HasPushSubscriptions;
 
     /**
      * Get the attributes that should be cast.
@@ -72,5 +75,9 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function jobListings()
     {
         return $this->hasMany(JobListing::class);
+    }
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
     }
 }

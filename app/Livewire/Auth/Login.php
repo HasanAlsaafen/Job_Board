@@ -23,6 +23,10 @@ class Login extends Component
 
             if (auth()->user()->role === 'employer') {
                 return redirect()->to('/dashboard');
+            } else if (auth()->user()->role === 'admin') {
+                return  redirect()->to('/admin');
+            } else if (auth()->user()->role === 'seeker') {
+                return redirect()->route('seeker.dashboard');
             }
             return redirect()->to('/');
         }
