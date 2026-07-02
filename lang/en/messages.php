@@ -237,7 +237,7 @@ return [
     ],
     'job_applicants' => [
         'heading'          => 'Applicants for :title',
-        'back'             => '← Back to applicants',
+        'back'             => 'Back to Jobs',
         'total'            => ':count Applicant|:count Applicants',
         'empty'            => 'No one has applied to this job yet.',
         'cover_letter'     => 'Cover Letter',

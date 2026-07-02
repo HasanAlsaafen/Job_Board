@@ -6,91 +6,111 @@ use App\Models\Tag;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Illuminate\Support\HtmlString;
 
 #[Layout('layouts.bare')]
-class AdminTags extends Component
+class AdminTags extends Component implements HasForms, HasTable
 {
-    public string $name = '';
-    public string $color = '#1e3a5f';
-    public string $bg = '#dbeafe';
-    public string $successMessage = '';
+    use InteractsWithForms;
+    use InteractsWithTable;
 
-    public bool $showEditModal = false;
-    public ?int $editingId = null;
-    public string $editName = '';
-    public string $editColor = '';
-    public string $editBg = '';
-
-    public function createTag(): void
+    protected function tagFormSchema(?Tag $record = null): array
     {
-        $this->validate([
-            'name'  => 'required|min:2|max:50|unique:tags,name',
-            'color' => 'required',
-            'bg'    => 'required',
-        ]);
+        return [
+            Forms\Components\TextInput::make('name')
+                ->label('Tag Name')
+                ->placeholder('e.g. Python')
+                ->required()
+                ->minLength(2)
+                ->maxLength(50)
+                ->unique(table: Tag::class, column: 'name', ignoreRecord: true),
 
-        Tag::create([
-            'name'  => $this->name,
-            'slug'  => Str::slug($this->name),
-            'color' => $this->color,
-            'bg'    => $this->bg,
-        ]);
+            Forms\Components\ColorPicker::make('color')
+                ->label('Text Color')
+                ->default('#1e3a5f')
+                ->required(),
 
-        $this->reset(['name']);
-        $this->color = '#1e3a5f';
-        $this->bg    = '#dbeafe';
-        $this->successMessage = 'Tag created.';
+            Forms\Components\ColorPicker::make('bg')
+                ->label('Background')
+                ->default('#dbeafe')
+                ->required(),
+        ];
     }
 
-    public function editTag(Tag $tag): void
+    protected function mutateTagFormData(array $data): array
     {
-        $this->editingId   = $tag->id;
-        $this->editName    = $tag->name;
-        $this->editColor   = $tag->color;
-        $this->editBg      = $tag->bg;
-        $this->showEditModal = true;
+        $data['slug'] = Str::slug($data['name']);
+
+        return $data;
     }
 
-    public function updateTag(): void
+    public function table(Table $table): Table
     {
-        $this->validate([
-            'editName'  => 'required|min:2|max:50|unique:tags,name,' . $this->editingId,
-            'editColor' => 'required',
-            'editBg'    => 'required',
-        ], [], [
-            'editName'  => 'name',
-            'editColor' => 'color',
-            'editBg'    => 'background',
-        ]);
+        return $table
+            ->query(Tag::query())
+            ->striped()
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Tag')
+                    ->searchable()
+                    ->sortable()
+                    ->html()
+                    ->formatStateUsing(fn (string $state, Tag $record) => new HtmlString(
+                        '<span style="color: ' . e($record->color) . '; background-color: ' . e($record->bg) . '" class="inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold">' . e($state) . '</span>'
+                    )),
 
-        Tag::findOrFail($this->editingId)->update([
-            'name'  => $this->editName,
-            'slug'  => Str::slug($this->editName),
-            'color' => $this->editColor,
-            'bg'    => $this->editBg,
-        ]);
+                Tables\Columns\TextColumn::make('color')
+                    ->label('Colors')
+                    ->html()
+                    ->formatStateUsing(fn (Tag $record) => new HtmlString(
+                        '<div class="flex items-center gap-2">'
+                        . '<span class="inline-flex items-center gap-1.5 font-mono text-xs text-brand-muted"><span class="w-3.5 h-3.5 rounded-sm border border-brand-border shrink-0" style="background-color: ' . e($record->color) . '"></span>' . e($record->color) . '</span>'
+                        . '<span class="text-brand-muted/40">/</span>'
+                        . '<span class="inline-flex items-center gap-1.5 font-mono text-xs text-brand-muted"><span class="w-3.5 h-3.5 rounded-sm border border-brand-border shrink-0" style="background-color: ' . e($record->bg) . '"></span>' . e($record->bg) . '</span>'
+                        . '</div>'
+                    )),
 
-        $this->showEditModal = false;
-        $this->editingId = null;
-        $this->successMessage = 'Tag updated.';
-    }
+                Tables\Columns\TextColumn::make('job_listings_count')
+                    ->label('Jobs')
+                    ->counts('jobListings')
+                    ->sortable()
+                    ->alignCenter()
+                    ->color('info'),
 
-    public function deleteTag(Tag $tag): void
-    {
-        $tag->delete();
-    }
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Added')
+                    ->since()
+                    ->sortable()
+                    ->color('gray'),
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('New Tag')
+                    ->form(fn () => $this->tagFormSchema())
+                    ->mutateFormDataUsing(fn (array $data) => $this->mutateTagFormData($data)),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make()
+                    ->form(fn (Tag $record) => $this->tagFormSchema($record))
+                    ->mutateFormDataUsing(fn (array $data) => $this->mutateTagFormData($data)),
 
-    public function cancelEdit(): void
-    {
-        $this->showEditModal = false;
-        $this->editingId = null;
-        $this->reset(['editName', 'editColor', 'editBg']);
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->emptyStateIcon('heroicon-o-tag')
+            ->emptyStateHeading('No tags')
+            ->emptyStateDescription('Create a tag to start categorizing job listings.');
     }
 
     public function render()
     {
-        return view('livewire.admin.tags', [
-            'tags' => Tag::withCount('jobListings')->latest()->get(),
-        ]);
+        return view('livewire.admin.tags');
     }
 }

@@ -11,6 +11,7 @@
     {{ $slot }}
 
     @livewireScripts
+    @filamentScripts
 </body>
 
 </html>

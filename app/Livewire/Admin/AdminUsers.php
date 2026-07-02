@@ -5,87 +5,80 @@ namespace App\Livewire\Admin;
 use App\Models\User;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use Livewire\WithPagination;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 
 #[Layout('layouts.bare')]
-class AdminUsers extends Component
+class AdminUsers extends Component implements HasForms, HasTable
 {
-    use WithPagination;
+    use InteractsWithForms;
+    use InteractsWithTable;
 
-    public string $search = '';
-    public string $roleFilter = '';
-
-    public bool $showEditModal = false;
-    public ?int $editingId = null;
-    public string $editName = '';
-    public string $editEmail = '';
-    public string $editRole = '';
-    public string $successMessage = '';
-
-    public function updatingSearch(): void
+    public function table(Table $table): Table
     {
-        $this->resetPage();
-    }
+        return $table
+            ->query(User::query())
+            ->striped()
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('semibold'),
 
-    public function updatingRoleFilter(): void
-    {
-        $this->resetPage();
-    }
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->sortable()
+                    ->color('gray'),
 
-    public function editUser(User $user): void
-    {
-        $this->editingId = $user->id;
-        $this->editName  = $user->name;
-        $this->editEmail = $user->email;
-        $this->editRole  = $user->role;
-        $this->showEditModal = true;
-        $this->successMessage = '';
-    }
+                Tables\Columns\TextColumn::make('role')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'admin'    => 'danger',
+                        'employer' => 'primary',
+                        default    => 'info',
+                    }),
 
-    public function updateUser(): void
-    {
-        $this->validate([
-            'editName'  => 'required|min:2|max:255',
-            'editEmail' => 'required|email|unique:users,email,' . $this->editingId,
-            'editRole'  => 'required|in:seeker,employer,admin',
-        ], [], [
-            'editName'  => 'name',
-            'editEmail' => 'email',
-            'editRole'  => 'role',
-        ]);
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Joined')
+                    ->since()
+                    ->sortable()
+                    ->color('gray'),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make()
+                    ->form([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->minLength(2),
+                        Forms\Components\TextInput::make('email')
+                            ->required()
+                            ->email()
+                            ->unique(ignoreRecord: true),
+                        Forms\Components\Select::make('role')
+                            ->options([
+                                'seeker'   => 'Seeker',
+                                'employer' => 'Employer',
+                                'admin'    => 'Admin',
+                            ])
+                            ->native(false)
+                            ->required(),
+                    ]),
 
-        User::findOrFail($this->editingId)->update([
-            'name'  => $this->editName,
-            'email' => $this->editEmail,
-            'role'  => $this->editRole,
-        ]);
-
-        $this->successMessage = 'User updated successfully.';
-    }
-
-    public function deleteUser(User $user): void
-    {
-        $user->delete();
-    }
-
-    public function cancelEdit(): void
-    {
-        $this->showEditModal = false;
-        $this->editingId = null;
-        $this->reset(['editName', 'editEmail', 'editRole', 'successMessage']);
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->emptyStateIcon('heroicon-o-users')
+            ->emptyStateHeading('No users')
+            ->emptyStateDescription('Registered accounts will appear here.');
     }
 
     public function render()
     {
-        $users = User::query()
-            ->when($this->search, fn($q) => $q->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
-            }))
-            ->when($this->roleFilter, fn($q) => $q->where('role', $this->roleFilter))
-            ->latest()
-            ->paginate(15);
-
-        return view('livewire.admin.users', ['users' => $users]);
+        return view('livewire.admin.users');
     }
 }

@@ -1,4 +1,7 @@
-<div class="{{ app()->isLocale('ar') ? 'lg:mr-64' : 'lg:ml-64' }} flex flex-col min-h-screen bg-brand-surface" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
+<div x-data="{ collapsed: localStorage.getItem('sidebarCollapsed') === 'true' }" @sidebar-toggle.window="collapsed = $event.detail.collapsed"
+    :class="collapsed ? '{{ app()->isLocale('ar') ? 'lg:mr-16' : 'lg:ml-16' }}' :
+        '{{ app()->isLocale('ar') ? 'lg:mr-64' : 'lg:ml-64' }}'"
+    class="flex flex-col min-h-screen bg-brand-surface" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
     <div class="px-4 lg:px-8 pt-16 lg:pt-0">
         @include('livewire.partials.employer-sidebar', ['active' => 'jobs'])

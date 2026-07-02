@@ -11,6 +11,8 @@ use Carbon\Carbon;
 
 use Illuminate\Notifications\DatabaseNotification;
 use App\Observers\DatabaseNotificationObserver;
+use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentColor;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         Carbon::setLocale(app()->getLocale());
         DatabaseNotification::observe(DatabaseNotificationObserver::class);
+
+        FilamentColor::register([
+            'primary' => Color::hex('#4F46E5'),
+        ]);
     }
 
     /**

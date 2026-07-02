@@ -1,9 +1,10 @@
-<div class="{{ app()->isLocale('ar') ? 'lg:mr-64' : 'lg:ml-64' }} flex flex-col min-h-screen bg-gray-50 text-black"
-    dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
+<div x-data="{ collapsed: localStorage.getItem('sidebarCollapsed') === 'true' }" @sidebar-toggle.window="collapsed = $event.detail.collapsed"
+    :class="collapsed ? '{{ app()->isLocale('ar') ? 'lg:mr-16' : 'lg:ml-16' }}' :
+        '{{ app()->isLocale('ar') ? 'lg:mr-64' : 'lg:ml-64' }}'"
+    class="flex flex-col min-h-screen bg-gray-50 text-black" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
     <div class="px-4 lg:px-8 pt-16 lg:pt-0">
         @include('livewire.partials.employer-sidebar', ['active' => 'applicants'])
-
         <header
             class="bg-white border-b border-gray-100 py-4 px-4 lg:px-6 mt-4 lg:mt-8 mb-6 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -69,7 +70,13 @@
                         <div class="flex items-start gap-3 flex-1 min-w-0">
                             <div
                                 class="shrink-0 w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center uppercase">
-                                {{ mb_substr($application->user->name, 0, 1) }}
+                                @if ($application->user->profile->img_url)
+                                    <img src="{{ Storage::url($application->user->profile->img_url) }}"
+                                        alt="{{ $application->user->name }}"
+                                        class="w-full h-full object-cover rounded-full">
+                                @else
+                                    {{ $application->user->initials() }}
+                                @endif
                             </div>
 
                             <div class="flex-1 min-w-0">
@@ -104,7 +111,7 @@
 
                             @if ($application->resume_path)
                                 <a href="{{ asset('storage/' . $application->resume_path) }}" target="_blank"
-                                    class="inline-flex items-center gap-1.5 text-xs font-semibold bg-white border border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition">
+                                    class="inline-flex items-center gap-1.5 w-full justify-center text-xs font-semibold bg-white border border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -118,17 +125,20 @@
                                 </span>
                             @endif
 
-                            <span class="text-xs text-gray-400">
-                                {{ __('messages.job_applicants.applied_on', ['date' => $application->created_at->diffForHumans()]) }}
-                            </span>
+
 
                             <button wire:click="startConversation({{ $application->user_id }})"
-                                class="mt-1 w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                class="mt-1 w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold text-sm px-4 py-1.5 rounded-xl shadow-sm transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                 </svg>
                                 Message
                             </button>
+                            <span class="text-xs text-gray-400">
+                                {{ __('messages.job_applicants.applied_on', ['date' => $application->created_at->diffForHumans()]) }}
+                            </span>
                         </div>
 
                     </div>
