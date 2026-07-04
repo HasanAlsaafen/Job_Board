@@ -16,6 +16,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Columns\Summarizers\Sum;
 
 #[Layout('layouts.bare')]
+
 class AdminJobListings extends Component implements HasForms, HasTable
 {
     use InteractsWithForms;

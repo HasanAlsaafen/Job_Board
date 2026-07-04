@@ -35,7 +35,7 @@ class AuthController extends Controller
      *     @OA\Response(response=422, description="Invalid credentials")
      * )
      */
-     public function login(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
