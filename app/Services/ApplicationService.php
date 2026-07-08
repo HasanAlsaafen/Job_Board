@@ -12,10 +12,10 @@ class ApplicationService
 
     public const STATUSES = [
         'Pending',
-        'Assesment in Progress',
+        'Assessment in Progress',
         'Interview',
         'Offer',
-        'Not proceding',
+        'Not proceeding',
         'Rejected',
         'Withdrawn',
     ];

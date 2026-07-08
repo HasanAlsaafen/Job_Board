@@ -10,10 +10,12 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next)
     {
-        $locale = session('locale', config('app.locale'));
-
-        App::setLocale($locale);
-
+        try {
+            $locale = session('locale', config('app.locale'));
+            App::setLocale($locale);
+        } catch (\Exception $e) {
+            App::setLocale(config('app.locale'));
+        }
         return $next($request);
     }
 }

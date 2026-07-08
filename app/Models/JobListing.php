@@ -21,6 +21,7 @@ class JobListing extends Model
         'user_id',
         'latitude',
         'longitude',
+        'expires_at',
     ];
     public function user()
     {
@@ -35,10 +36,20 @@ class JobListing extends Model
     {
         return $this->belongsToMany(User::class, 'job_user', 'job_id', 'user_id')->withTimestamps()->withPivot('note');
     }
-
+    public function scopeNotExpired(Builder $query)
+    {
+        return $query->where(function ($q) {
+            return $q->whereNull('expires_at')->orWhere('expires_at', '>=', now());
+        });
+    }
     public function scopeRemote(Builder $query)
     {
         return $query->where('type', 'remote');
+    }
+    public function scopeExpired(Builder $query): Builder
+    {
+
+        return $query->where('expires_at', '<',now());
     }
     public function scopeActive(Builder $query): Builder
     {
@@ -48,5 +59,9 @@ class JobListing extends Model
     {
         return $query->where('title', 'LIKE', '%' . $search . '%')
             ->orWhere('company_name', 'LIKE', '%' . $search . '%');
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

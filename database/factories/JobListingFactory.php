@@ -37,6 +37,7 @@ class JobListingFactory extends Factory
             'type' => $this->faker->randomElement(['Full-time', 'Part-time', 'Contract']),
             'latitude' => $this->faker->latitude(29.5, 33.3),
             'longitude' => $this->faker->longitude(34.2, 36.6),
+
         ];
     }
 }

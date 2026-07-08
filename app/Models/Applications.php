@@ -16,10 +16,10 @@ class Applications extends Model
 
     private const STATUS_KEYS = [
         'Pending'               => 'messages.status.pending',
-        'Assesment in Progress' => 'messages.status.assessment_in_progress',
+        'Assessment in Progress' => 'messages.status.assessment_in_progress',
         'Interview'             => 'messages.status.interview',
         'Offer'                 => 'messages.status.offer',
-        'Not proceding'         => 'messages.status.not_proceeding',
+        'Not proceeding'        => 'messages.status.not_proceeding',
         'Rejected'              => 'messages.status.rejected',
         'Withdrawn'             => 'messages.status.withdrawn',
     ];

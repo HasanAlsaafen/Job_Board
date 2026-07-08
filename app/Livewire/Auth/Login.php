@@ -19,14 +19,18 @@ class Login extends Component
     {
         $this->validate();
 
+
         if (auth()->attempt(['email' => $this->email, 'password' => $this->password])) {
 
             if (auth()->user()->role === 'employer') {
                 return redirect()->to('/dashboard');
+            } else if (auth()->user()->role === 'admin') {
+                return  redirect()->to('/admin');
+            } else if (auth()->user()->role === 'seeker') {
+                return redirect()->route('seeker.dashboard');
             }
             return redirect()->to('/');
         }
-
         $this->errorMessage = 'Invalid credentials. Please try again.';
     }
 

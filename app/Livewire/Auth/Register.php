@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +39,7 @@ class Register extends Component
         if ($user->role == 'employer') {
             return redirect()->to('dashboard');
         } else {
-            return redirect()->to('/');
+            return redirect()->route('seeker.dashboard');
         }
     }
     public function render()

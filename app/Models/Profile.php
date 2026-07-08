@@ -10,6 +10,12 @@ class Profile extends Model
         'phone_number',
         'phone_prefix',
         'img_url',
-        'user_id'
+        'user_id',
+        'title',
+        'bio',
+        'location',
+        'linkedin',
+        'github',
+        'resume_path',
     ];
 }
