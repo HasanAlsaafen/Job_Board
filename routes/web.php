@@ -22,7 +22,7 @@ use App\Livewire\Admin\AdminTags;
 
 Route::view('/', 'welcome')->name('home');
 
-Route::middleware('guest')->group(function () {
+Route::middleware('throttle:guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
     Route::get('/register', Register::class)->name('register');
 });
